@@ -46,10 +46,8 @@ schedule 2 is not evidence that a shipped build or deployed server selects it.
 All references below identify paths at source commit
 `084ddc73ddd9b442ef56c5af0ddd80430140536e`. They are provenance, not prerequisites
 for reading or implementing this specification; no private repository link is
-needed. The source working checkout also contained uncommitted IPv4 bypass and
-native service-lifecycle work. It was excluded from the snapshot; its inspected
-diff changes local routing and pre-transport packet selection, not the protocol
-crate, server wire codec or cryptographic schedules.
+needed. The snapshot identity excludes later source changes. Local routing and
+pre-transport packet selection are outside the wire protocol described here.
 
 | Subject | Source paths / functions |
 | --- | --- |
@@ -66,6 +64,6 @@ crate, server wire codec or cryptographic schedules.
 | Identity trust provisioning | `shared/client/forwardSecretHandshake.cjs`; `shared/client/catalogAuthenticity.cjs`; `defaults/forward_secret_server_identity_policy.json` |
 | Existing vectors | `shared/protocol/session_interop_fixtures.json`, `session_interop_negative_fixtures.json`, `forward_secret_interop_fixtures.json`; protocol unit/property tests; native interop tests |
 
-No SDK, executable examples, new tests, CI, protocol redesign or source-code
-changes are included in this extraction. Historical roadmap assertions remain
-historical; only the behavior explicitly described here belongs to this snapshot.
+This repository provides no SDK or executable examples. Historical roadmap
+assertions remain historical; only the behavior explicitly described here
+belongs to this snapshot.

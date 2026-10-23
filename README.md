@@ -28,9 +28,8 @@ Noise NK or forward secrecy against server-static-key compromise.
 - [UDP and HTTPS/WSS transports](specification/transports.md)
 - [Errors, discrepancies and remaining gaps](specification/errors.md)
 - [Data-only examples and test vectors](examples/README.md)
-- [Extraction result and publication checks](EXTRACTION_REPORT.md)
+- [Source coverage and extraction limits](EXTRACTION_REPORT.md)
 
 Copyright 2026 Intellisys Software LLC. The specification text and data-only
-examples are licensed under [CC BY 4.0](LICENSE), approved by the Owner on
-2026-10-23. See [licensing scope](LICENSING.md). This does not license the separate
-application implementation. Publication remains a separate Owner action.
+examples are licensed under [CC BY 4.0](LICENSE). See the [licensing scope](LICENSING.md).
+The separate Rapido VPN application implementation is excluded from this license.

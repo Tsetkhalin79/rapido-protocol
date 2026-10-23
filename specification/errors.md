@@ -43,7 +43,7 @@ rows do not specify side effects for every malformed frame.
 | Any overlapping fresh-secret init rejects | A newer valid pending replacement is allowed after the implemented 5000-ms grace. |
 | Every previous phase retires after a 30,000-ms overlap | Only the immediately previous phase has an expiry entry. A consecutive rollover can overwrite that entry, leaving older keys and replay state available until other session cleanup. See [key phases](handshake.md#key-phases-and-rehandshake). |
 | Default unknown identities admitted unconditionally | Admission is layered and configurable; managed-account identity/credential/entitlement checks apply. |
-| Approved future Entry/Exit and multi-hop architecture described alongside wire baseline | Those product targets do not define implemented inter-server framing in this extraction. |
+| Proposed Entry/Exit and multi-hop architecture described alongside wire baseline | Those product targets do not define implemented inter-server framing in this snapshot. |
 
 ## Remaining limits and concrete unknowns
 
@@ -75,10 +75,7 @@ rows do not specify side effects for every malformed frame.
 6. Deployment-specific capacity/rate/TTL values and transport availability are
    not negotiated comprehensively on the wire. No universal retry interval or
    recovery success deadline can be inferred from the packet format.
-7. Rights-holder identification follows the Owner directive. Repository review
-   did not independently establish a complete contributor-assignment or patent
-   chain. The approved content license does not certify those rights or grant
-   access to the separate application implementation.
 
-These limits are explicit completion boundaries, not proposals to redesign the
-protocol. Runtime behavior was not changed to address documentation discrepancies.
+For licensing scope, see [LICENSING.md](../LICENSING.md). These limits describe
+the documented snapshot; they do not imply a runtime remedy for the identified
+discrepancies.
