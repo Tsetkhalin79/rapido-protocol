@@ -144,8 +144,9 @@ credential or a complete valid managed-account handshake.
 Use ChaCha20-Poly1305 with the directional key, nonce and AAD specified in
 [packet format](packet-format.md). AES-GCM and BLAKE2s are not negotiated
 alternatives in this snapshot. Keep counters separate by session, direction and
-key phase. Never reuse a key/nonce pair for a different plaintext. No wrapping
-counter or phase transition is defined.
+key phase. Never reuse a key/nonce pair for a different plaintext. No data
+counter wrap is defined; [phase advancement](handshake.md#key-phases-and-rehandshake)
+uses the lifecycle described separately.
 
 The server uses a 64-packet replay window per phase: seen counters and counters
 at least 64 behind the highest accepted counter reject. Replay eligibility is

@@ -60,6 +60,12 @@ The requested phase must have both directional keys, or be the permitted next
 schedule-2 phase. ACK echoes session, phase and counter and includes server wall
 time in milliseconds. Match the outstanding probe; a stale/mismatched ACK does
 not establish liveness. Ordinary keepalive is endpoint/state-bound, not AEAD.
+For a source-eligible, decodable keepalive requesting the next schedule-2 phase,
+the server installs that phase before checking whether the keepalive counter
+increases. A duplicate or lower counter then rejects without an ACK or TTL
+refresh, but does not undo the phase change. Subsequent server return data can
+use the new active phase. The client still waits for a matching ACK before using
+that phase for its own sends; this rejection does not confirm client cutover.
 
 SessionClose is best effort, has no success reply, and removes runtime session,
 key/replay and route state through the server teardown path. Repeating a close
@@ -98,8 +104,14 @@ policy, not a different wire format.
 Only schedule 2 supports in-place next-phase rollover. Send a keepalive requesting
 the next contiguous U16 phase; use that phase only after the matching ACK.
 Skipped phases and exhaustion reject. Both directions derive new keys with the
-new phase from the existing shared secret/transcript. Retain the previous phase
-for 30,000 ms, then remove its keys and replay window before further ingress.
+new phase from the existing shared secret/transcript. The server tracks one
+immediately previous phase for a 30,000-ms overlap. If no further rollover
+replaces that entry, expiry processing removes its keys and replay window.
+Consecutive rollovers inside the overlap overwrite the sole expiry entry without
+removing keys or replay state for the older phase. That older phase can remain
+available for authenticated, fresh-counter data ingress beyond 30,000 ms, until
+other session cleanup removes it. The overlap is therefore not a global key
+retirement bound or a forward-security guarantee for prior phases.
 This rollover does not generate a new DH shared secret. Native scheduling uses
 65,536 protected packets or 15 minutes, whichever occurs first.
 
@@ -107,7 +119,8 @@ A fresh-secret replacement uses a new client ephemeral and a strictly larger
 client nonce under the same identity/session id. The server keeps the established
 session active while the replacement completes policy exchange. SessionReady
 selects the next contiguous phase; policy ACK atomically installs the replacement,
-with the prior phase retained for the overlap. Downgrading an established
+with the prior phase tracked for the overlap subject to the consecutive-rollover
+limitation above. Downgrading an established
 schedule-2 session rejects. A second pending replacement is rejected for the first
 5000 ms; a newer valid init can replace stalled pending work after that grace.
 This is an implemented exception to older documentation's unconditional overlap

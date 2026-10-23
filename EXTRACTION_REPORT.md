@@ -5,11 +5,13 @@
 Objective: extract the existing Rapido wire specification into its sole canonical
 repository without runtime changes or remote publication.
 
-Result: **PASS for the bounded documentation extraction**, with the concrete
-completeness limits below. This is not a production-security or end-to-end
-interoperability certificate. Accountable executor: task-scoped Protocol
-Documentation Curator. This report is the single live task surface. After local
-commit delivery the assignment ends; publication belongs to the Owner.
+The initial **PASS covered the bounded file extraction and local checks**, not
+complete factual lifecycle agreement. Independent review of the frozen initial
+candidate `8ddc18fd0352fba7c06ca10361cfc134653bd53d` returned PARTIAL with
+two P2 documentation findings, R-001 and C-001. This correction round updates
+the affected lifecycle text; it has not received a new independent verdict.
+Neither result is a production-security or end-to-end interoperability
+certificate. Publication belongs to the Owner.
 
 ## Scope and result inventory
 
@@ -42,6 +44,25 @@ versus stale JSON wording; kind 11 and optional tails absent from old summaries;
 whole-frame size limit; idempotent controls; manual WSS versus hypothetical
 automatic QUIC/TCP; stalled-rehandshake replacement; security properties below.
 
+The subsequent independent PARTIAL identified two additional lifecycle gaps:
+
+- **R-001 (P2):** The pinned server has one expiry entry for the immediately
+  previous phase. A second rollover inside the 30,000-ms overlap overwrites that
+  entry without deleting the older key or replay state. Valid old-phase data can
+  pass the retained-key/replay boundary after that period; forwarding still
+  depends on later checks. The revised [phase lifecycle](specification/handshake.md#key-phases-and-rehandshake)
+  and [limits](specification/errors.md#remaining-limits-and-concrete-unknowns)
+  disclose that the overlap is not a global retirement bound. This is a static
+  source trace, not a running-server reproduction or runtime remediation.
+- **C-001 (P2):** A source-eligible, decodable keepalive requesting the next
+  schedule-2 phase installs it before the server checks the replay counter. A
+  duplicate/lower counter then rejects without ACK or TTL refresh, but the new
+  active phase can be used on subsequent server return data. The revised
+  [keepalive lifecycle](specification/handshake.md#state-transitions-and-expiry)
+  and [rejection table](specification/errors.md#error-handling) distinguish this
+  server side effect from the client's ACK-gated send requirement. This does not
+  assert transactional rollback or specify behavior for every malformed frame.
+
 Schedules 0/1 derive traffic keys solely from public handshake fields. Schedule 2
 uses a custom client-ephemeral/server-static X25519 construction and lacks forward
 secrecy against later compromise of the server static private key. These findings
@@ -72,7 +93,7 @@ real infrastructure endpoint, personal account data, internal organization recor
 private filesystem location or third-party implementation is included in target
 content. Required protocol labels, paths and numeric constants are retained.
 
-## Verification and local delivery
+## Initial extraction verification and local delivery
 
 One targeted documentation verification cycle was completed:
 
@@ -102,6 +123,22 @@ It is bypassed only for this documentation commit with command-local Git
 configuration to honor the directive's no-runtime-change/no-full-suite boundary;
 no persistent hook setting is changed. Target has no configured project hook.
 No full product build/tests, independent review, new automation, push, PR, release
-or remote mutation was run.
+or remote mutation was run during the initial extraction.
 Final commit identities are delivered with the handoff rather than embedded
 self-referentially in this committed report. The Owner decides publication.
+
+## Documentation correction verification
+
+The correction task compares only the two revised lifecycle descriptions with
+the pinned server paths: `session_handshake.rs` phase installation/pruning and
+keepalive counter ordering, `lib.rs` phase-key/data replay lookup, and `main.rs`
+active-phase selection for return data. The directly affected Markdown was
+checked for contrary unconditional expiry or rejection-rollback claims, local
+links/anchors, English text and whitespace. The correction changes only
+`specification/handshake.md`, `specification/errors.md`,
+`specification/security.md` and this report in the target repository. The
+security page clarifies its counter-wrap wording and links to phase advancement.
+No fixture bytes, crypto formulas or source files change, so the earlier fixture
+and cryptographic checks are reused rather than repeated.
+These are author-side targeted checks, not independent acceptance. No push, PR,
+merge, release or publication is part of this correction.

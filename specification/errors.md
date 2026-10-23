@@ -10,11 +10,12 @@ WSS connection-level HTTP/close errors are described in [transports](transports.
 | Rejection class | Examples | Result |
 | --- | --- | --- |
 | Framing | short header/payload, unsupported version/kind, trailing bytes without padding, invalid codec bits | no valid control/data processing |
-| Binary payload | invalid UTF-8, malformed length/tail, unsupported codec negotiation, malformed keepalive extension | no state advancement |
+| Binary payload | invalid UTF-8, malformed length/tail, unsupported codec negotiation, malformed keepalive extension | decode rejects before normal control/data dispatch |
 | Admission | missing identity, invalid device signature, unavailable account lookup, inactive/revoked identity, inactive entitlement, node capacity policy | no successful bootstrap |
 | Selection | unknown transform/profile/schedule, unavailable gated material, opted-in client downgrade | no usable selected session |
 | Sequence | ACK before policy snapshot, request after Established, keepalive before establishment, pending-rehandshake conflict | no success response |
-| Replay/lifetime | old init nonce, duplicate/lower keepalive counter, expired session/challenge, stale or duplicate data counter | reject; no successful liveness confirmation |
+| Replay/lifetime | old init nonce, expired session/challenge, stale or duplicate data counter | reject; no successful liveness confirmation |
+| Keepalive counter replay | duplicate/lower counter on a source-eligible keepalive requesting the next schedule-2 phase | reject without ACK or TTL refresh; the phase can already be installed |
 | Data | missing phase key, bad AEAD, invalid IP lengths/MTU, wrong source/policy or unavailable egress | packet dropped; no forwarding guarantee |
 | Recovery | bad rebind proof, unmatched challenge/generation, skipped/exhausted phase | no accepted endpoint/phase transition |
 
@@ -22,6 +23,11 @@ A single timeout does not distinguish rejection, congestion, packet loss, TLS
 failure or an unreachable endpoint. Implementations must match the expected
 response and state, not treat socket success or Ping as authenticated acceptance.
 Local diagnostics may classify causes but are not a wire error vocabulary.
+The keepalive counter check follows next-phase installation in the pinned server.
+This specific rejection has a phase side effect: subsequent server return data
+can use the newly active phase, while the client has no matching ACK authorizing
+its own phase cutover. A rejection is not a general rollback guarantee; these
+rows do not specify side effects for every malformed frame.
 
 ## Resolved documentation discrepancies
 
@@ -35,6 +41,7 @@ Local diagnostics may classify causes but are not a wire error vocabulary.
 | Every duplicate transition rejects | PolicyRequest before establishment and ACK after establishment have explicit idempotent behavior. |
 | UDP-first automatic QUIC/TCP fallback | Explicit HTTPS mode uses WSS; no generic automatic failover wire protocol or QUIC carrier is defined. |
 | Any overlapping fresh-secret init rejects | A newer valid pending replacement is allowed after the implemented 5000-ms grace. |
+| Every previous phase retires after a 30,000-ms overlap | Only the immediately previous phase has an expiry entry. A consecutive rollover can overwrite that entry, leaving older keys and replay state available until other session cleanup. See [key phases](handshake.md#key-phases-and-rehandshake). |
 | Default unknown identities admitted unconditionally | Admission is layered and configurable; managed-account identity/credential/entitlement checks apply. |
 | Approved future Entry/Exit and multi-hop architecture described alongside wire baseline | Those product targets do not define implemented inter-server framing in this extraction. |
 
@@ -60,10 +67,15 @@ Local diagnostics may classify causes but are not a wire error vocabulary.
    documented; equivalence on every malformed-input or Unicode-normalization
    edge across all native clients has not been exhaustively established. Use
    stable ASCII identity strings and the documented exact UTF-8 lengths.
-5. Deployment-specific capacity/rate/TTL values and transport availability are
+5. Consecutive schedule-2 rollovers can leave an older phase's key and replay
+   state without the advertised 30,000-ms retirement bound. A valid old-phase
+   data frame may pass the retained-key/replay boundary; later policy and egress
+   checks still govern delivery. This source-derived trace has not been
+   reproduced against a running server, and no runtime remedy is included here.
+6. Deployment-specific capacity/rate/TTL values and transport availability are
    not negotiated comprehensively on the wire. No universal retry interval or
    recovery success deadline can be inferred from the packet format.
-6. Rights-holder identification follows the Owner directive. Repository review
+7. Rights-holder identification follows the Owner directive. Repository review
    did not independently establish a complete contributor-assignment or patent
    chain. The approved content license does not certify those rights or grant
    access to the separate application implementation.
