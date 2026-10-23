@@ -1,0 +1,43 @@
+{
+  "session_init": {
+    "session_id": "interop-session-1",
+    "client_nonce": 1716000001000,
+    "user_id": "u-interop-100",
+    "device_id": "d-interop-100",
+    "preferred_codec": "BinV1",
+    "transform_profiles": [0, 1]
+  },
+  "session_ready": {
+    "session_id": "interop-session-1",
+    "server_nonce": 1716000002000,
+    "policy_required": true,
+    "selected_codec": "BinV1",
+    "selected_transform_profile": 1
+  },
+  "nested_vpn_policy_request": {
+    "session_id": "interop-session-1"
+  },
+  "nested_vpn_policy_ack": {
+    "session_id": "interop-session-1"
+  },
+  "nested_vpn_policy_snapshot": {
+    "policy_mode": "preserve-secondary-routes",
+    "mtu": 1100,
+    "mss_clamp": 1048,
+    "passthrough_udp_ports": [500, 4500]
+  },
+  "session_keepalive": {
+    "session_id": "interop-session-1",
+    "key_phase": 0,
+    "client_counter": 1
+  },
+  "session_keepalive_ack": {
+    "session_id": "interop-session-1",
+    "key_phase": 0,
+    "client_counter": 1,
+    "server_time_ms": 1716000003000
+  },
+  "session_close": {
+    "session_id": "interop-session-1"
+  }
+}

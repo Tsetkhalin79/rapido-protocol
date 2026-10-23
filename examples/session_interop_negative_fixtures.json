@@ -1,0 +1,91 @@
+{
+  "unsupported_transform_profile": {
+    "session_init": {
+      "session_id": "interop-neg-transform-1",
+      "client_nonce": 1716000010000,
+      "user_id": "u-interop-neg-100",
+      "device_id": "d-interop-neg-100",
+      "preferred_codec": "BinV1",
+      "transform_profiles": [0, 2]
+    },
+    "expected_error": "unsupported_transform_profile"
+  },
+  "invalid_sequence_ack_without_pending_snapshot": {
+    "session_init": {
+      "session_id": "interop-neg-ack-1",
+      "client_nonce": 1716000011000,
+      "user_id": "u-interop-neg-101",
+      "device_id": "d-interop-neg-101",
+      "preferred_codec": "BinV1",
+      "transform_profiles": [0, 1]
+    },
+    "nested_vpn_policy_ack": {
+      "session_id": "interop-neg-ack-1"
+    },
+    "expected_error": "ack_without_pending_snapshot"
+  },
+  "invalid_sequence_request_after_established": {
+    "session_init": {
+      "session_id": "interop-neg-established-1",
+      "client_nonce": 1716000012000,
+      "user_id": "u-interop-neg-102",
+      "device_id": "d-interop-neg-102",
+      "preferred_codec": "BinV1",
+      "transform_profiles": [0, 1]
+    },
+    "nested_vpn_policy_request": {
+      "session_id": "interop-neg-established-1"
+    },
+    "nested_vpn_policy_ack": {
+      "session_id": "interop-neg-established-1"
+    },
+    "repeated_nested_vpn_policy_request": {
+      "session_id": "interop-neg-established-1"
+    },
+    "expected_error": "request_after_established"
+  },
+  "bridge_unsupported_codec": {
+    "session_init": {
+      "session_id": "interop-neg-codec-1",
+      "client_nonce": 1716000013000,
+      "user_id": "u-interop-neg-103",
+      "device_id": "d-interop-neg-103",
+      "preferred_codec": "UnknownCodec",
+      "transform_profiles": [0, 1]
+    },
+    "expected_error": "preferred_codec must be BinV1"
+  },
+  "bridge_unsupported_transform_profile": {
+    "session_init": {
+      "session_id": "interop-neg-bridge-transform-1",
+      "client_nonce": 1716000014000,
+      "user_id": "u-interop-neg-104",
+      "device_id": "d-interop-neg-104",
+      "preferred_codec": "BinV1",
+      "transform_profiles": [0, 2]
+    },
+    "expected_error": "only transform profiles 0 and 1 are supported"
+  },
+  "bridge_empty_session_id": {
+    "session_init": {
+      "session_id": "",
+      "client_nonce": 1716000015000,
+      "user_id": "u-interop-neg-105",
+      "device_id": "d-interop-neg-105",
+      "preferred_codec": "BinV1",
+      "transform_profiles": [0, 1]
+    },
+    "expected_error": "session_id must be a non-empty string"
+  },
+  "bridge_whitespace_session_id": {
+    "session_init": {
+      "session_id": "   ",
+      "client_nonce": 1716000016000,
+      "user_id": "u-interop-neg-106",
+      "device_id": "d-interop-neg-106",
+      "preferred_codec": "BinV1",
+      "transform_profiles": [0, 1]
+    },
+    "expected_error": "session_id must be a non-empty string"
+  }
+}
